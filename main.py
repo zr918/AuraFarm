@@ -1,5 +1,6 @@
 import pygame
 import sys
+import csv
 
 from player import Player
 from interactable import Interactable, Food, Water, Sign
@@ -40,6 +41,8 @@ class Game:
             pygame.display.update()
             pygame.time.Clock().tick(60)
 
+    # def read_map_from_csv("Aura Farm Map Draft - Sheet1"):
+    # def load_map_colors_from_excel(filename):
 
 Game().run()
 
