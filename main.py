@@ -15,9 +15,9 @@ class Game:
         self.clock = pygame.time.Clock()
         self.assets = { # (dictionary) all images for stuff on the screen e.g. background, player, interactable
             'background': (14, 219, 248), #RGB color tuple for background
-            'player': pygame.transform.scale(pygame.image.load("images/sprite.webp").convert_alpha(), (200, 300))
+            'player': pygame.transform.scale(pygame.image.load("images/sprite.webp").convert_alpha(), (20, 30))
         }
-        self.player = Player(self.screen, (100, 100), self.assets['player'].get_size())
+        self.player = Player(self.screen, [100, 100], self.assets['player'].get_size())
 
     def run(self):
         running = True
@@ -26,6 +26,16 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        self.player.jump()
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_LEFT]:
+                self.player.moveleftright(-4);
+            if keys[pygame.K_RIGHT]:
+                self.player.moveleftright(4);
+
+            self.player.update()
             self.screen.blit(self.assets['player'], self.player.pos) # this is fine
             pygame.display.update()
             pygame.time.Clock().tick(60)
