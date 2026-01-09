@@ -17,16 +17,27 @@ class Player(PhysicalEntities):
     def size(self):  # returns size
         return self.size
 
+    def health(self):
+        return self.health
+
+    def changehealth(self, num):
+        self.health = self.health + num
+
     def update(self, movement = [0, 0]):
         self.collisions = {'up': False, 'down': False, 'right': False, 'left': False}
 
-        if self.pos[1] > 500:
-            self.velocity[1] = -2
+        if self.pos[1] > 400:
+            self.velocity[1] = -1
             self.velocity[1] = min(1000, self.velocity[1] + 0.05)
         elif movement[1]:
             self.velocity[1] = -9
         else:
             self.velocity[1] = min(1000, self.velocity[1] + 0.1)
+
+        if self.pos[0] > 800:
+            self.pos[0] = 0
+        elif self.pos[0] < 0:
+            self.pos[0] = 800
 
         frame_movement = (movement[0] + self.velocity[0], movement[1] + self.velocity[1])
 

@@ -16,12 +16,18 @@ class Game:
         self.clock = pygame.time.Clock()
         self.assets = { # (dictionary) all images for stuff on the screen e.g. background, player, interactable
             'background': (14, 219, 248), #RGB color tuple for background
-            'player': pygame.transform.scale(pygame.image.load("images/sprite.webp").convert_alpha(), (20, 30))
+            'player': pygame.transform.scale(pygame.image.load("images/spritetest.png").convert_alpha(), (40, 60))
         }
         self.player = Player(self.screen, [100, 100], self.assets['player'].get_size())
+        pygame.mixer.music.load('sounds/piano_sound.mp3')
+
 
     def run(self):
+        pygame.mixer.music.play()
+        pygame.mixer.music.play(-1)
         running = True
+        font = pygame.font.SysFont("Adobe Heidi Std Normal", 16)
+        ticks = 0;
         while running:
             self.screen.fill(self.assets['background'])
             for event in pygame.event.get():
@@ -38,11 +44,29 @@ class Game:
 
             self.player.update()
             self.screen.blit(self.assets['player'], self.player.pos) # this is fine
+            #health bar graphic
+            pygame.draw.rect(self.screen, (255, 0, 0), (50, 150-self.player.health, 25, self.player.health))
+            pygame.draw.rect(self.screen, (0, 0, 0), (50, 50, 25, 100), 3)
+            #health bar text
+            text_surface = font.render("HP: " + str(self.player.health), True, (0, 0, 0))
+            self.screen.blit(text_surface, (45, 30))
+
+            #update
             pygame.display.update()
             pygame.time.Clock().tick(60)
 
+            #decrease health by 5 every 15 seconds
+            ticks = ticks + 1;
+            if ticks == 900:
+                self.player.changehealth(-5)
+                ticks = 0;
+
+
+
     # def read_map_from_csv("Aura Farm Map Draft - Sheet1"):
     # def load_map_colors_from_excel(filename):
+
+
 
 Game().run()
 
