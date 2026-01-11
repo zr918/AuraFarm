@@ -2,6 +2,8 @@
 import pygame
 from pygame.locals import *
 
+
+
 # Initiate pygame and give permission
 # to use pygame's functionality
 pygame.init()
@@ -61,3 +63,6 @@ while run:
 
     # Filling the window with white color
     window.fill((255, 255, 255))
+
+
+

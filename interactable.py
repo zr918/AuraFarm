@@ -9,8 +9,22 @@ class Interactable:
         self.screen = pygame.display.get_surface()
 
 class Food(Interactable):  # food class
-    def __init__(self, screen):
+    def __init__(self, x, y, width, height):
         super().__init__()
+        self.rect = pygame.Rect(x, y, width, height)
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.eaten = False
+        self.health = 10
+
+    def iseaten(self):
+        return self.eaten
+
+    def health(self):
+        return self.health
+
 
 class Water(Interactable):   # water class
     def __init__(self, screen):
