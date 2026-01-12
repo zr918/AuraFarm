@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="25" height="7" tilewidth="32" tileheight="32" infinite="0" nextlayerid="2" nextobjectid="1">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="25" height="7" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="16">
  <tileset firstgid="1" source="village1.tsx"/>
  <tileset firstgid="99" source="village2.tsx"/>
+ <tileset firstgid="183" source="Cereals.tsx"/>
  <layer id="1" name="Tile Layer 1" width="25" height="7">
   <data encoding="csv">
 1,2,3,4,5,6,7,8,9,10,11,12,13,14,100,101,102,103,104,105,106,107,108,109,110,
@@ -13,4 +14,15 @@
 85,86,87,88,89,90,91,92,93,94,95,96,97,98,172,173,174,175,176,177,178,179,180,181,182
 </data>
  </layer>
+ <objectgroup id="2" name="interactables">
+  <object id="1" type="Food" gid="183" x="223.69" y="212.054" width="32" height="32"/>
+  <object id="2" type="Food" gid="183" x="481.204" y="135.231" width="32" height="32"/>
+  <object id="3" type="Food" gid="183" x="609.038" y="84.2195" width="32" height="32"/>
+  <object id="4" type="Poison" gid="196" x="446.787" y="137.074" width="32" height="32"/>
+  <object id="5" type="Poison" gid="196" x="192.961" y="208.367" width="32" height="32"/>
+  <object id="7" type="Poison" gid="196" x="271.628" y="208.367" width="32" height="32"/>
+  <object id="8" type="Poison" gid="196" x="528.527" y="210.825" width="32" height="32"/>
+  <object id="9" type="finish" x="756.785" y="168.646" width="20.8768" height="33.5986"/>
+  <object id="10" x="813.218" y="187.239"/>
+ </objectgroup>
 </map>

@@ -12,6 +12,7 @@ class Player(PhysicalEntities):
         self.collisions = {'up': False, 'down': False, 'right': False, 'left': False}
         self.width, self.height = size
         self.rect = pygame.Rect(0, 0, self.width, self.height)
+        self.minheight = 0;
 
     def setpos(self, x, y):
         self.pos = (x, y)
@@ -34,7 +35,7 @@ class Player(PhysicalEntities):
     def update(self, movement = [0, 0]):
         self.collisions = {'up': False, 'down': False, 'right': False, 'left': False}
 
-        if self.pos[1] > 320:
+        if self.pos[1] > self.minheight:
             self.velocity[1] = -1
             self.velocity[1] = min(1000, self.velocity[1] + 0.05)
         elif movement[1]:

@@ -22,19 +22,25 @@ class Game:
         self.TILE_WIDTH = self.tmx_data.tilewidth * 2
         self.TILE_HEIGHT = self.tmx_data.tileheight * 2
 
-        mapwidth = self.tmx_data.width * self.TILE_WIDTH
-        mapheight = self.tmx_data.height * self.TILE_HEIGHT
+        self.mapwidth = self.tmx_data.width * self.TILE_WIDTH
+        self.mapheight = self.tmx_data.height * self.TILE_HEIGHT
 
         self.camerax = 0
 
-        self.screen = pygame.display.set_mode((800, mapheight))
+        self.screen = pygame.display.set_mode((800, self.mapheight))
         pygame.display.set_caption('AuraFarm')
         self.clock = pygame.time.Clock()
         self.assets = { # (dictionary) all images for stuff on the screen e.g. background, player, interactable
             'background': (14, 219, 248), #RGB color tuple for background
             'player': pygame.transform.scale(pygame.image.load("images/spritetest.png").convert_alpha(), (40, 60)),
-            'food': pygame.transform.scale(pygame.image.load("images/corn.png").convert_alpha(), (50, 60))
+            'food': pygame.transform.scale(pygame.image.load("images/corn.png").convert_alpha(), (50, 60)),
+            'star': pygame.transform.scale(pygame.image.load("images/star.png").convert_alpha(), (50, 50)),
+            'orange': pygame.transform.scale(pygame.image.load("images/orange.png").convert_alpha(), (50, 50)),
+            'winimage': pygame.image.load("images/winlose/1.png").convert_alpha(),
+            'loseimage': pygame.image.load("images/winlose/2.png").convert_alpha(),
         }
+        self.assets['orange'].set_colorkey((255, 255, 255))
+        self.assets['star'].set_colorkey((255, 255, 255))
         self.player = Player(self.screen, [100, 100], self.assets['player'].get_size())
         pygame.mixer.music.load('sounds/piano_sound.mp3')
         # def read_map_from_csv("Aura Farm Map Draft - Sheet1"):
@@ -42,10 +48,14 @@ class Game:
 
         #food
         self.interactable_food = []
+        self.interactable_poison = []
         for obj in self.tmx_data.objects:
             if obj.type == 'Food':
                 newfood = Food(obj.x * 2, obj.y * 2, obj.width * 2, obj.height * 2)
                 self.interactable_food.append(newfood)
+            if obj.type == 'Poison':
+                newfood = Food(obj.x * 2, obj.y * 2, obj.width * 2, obj.height * 2)
+                self.interactable_poison.append(newfood)
 
 
         #popups and interactable objects
@@ -72,11 +82,28 @@ class Game:
                     "type": "door", "rect": rect, "target": obj.properties.get("Start_Forest Scene"), "spawn": (obj.properties.get("X"), obj.properties.get("Y"))
                 })
 
+
+
+
     def intro(self):
-        startscreen = pygame.image.load('images/startscreen.webp')
+        pygame.mixer.music.load('sounds/intro.mp3')
+        pygame.mixer.music.play()
+        startscreen = pygame.image.load('images/AuraFarm Intro/1.png')
         self.screen.blit(startscreen, (0, 0))
         pygame.display.update()
-        pygame.time.delay(5000)
+        pygame.time.delay(4000)
+        startscreen = pygame.image.load('images/AuraFarm Intro/2.png')
+        self.screen.blit(startscreen, (0, 0))
+        pygame.display.update()
+        pygame.time.delay(4000)
+        startscreen = pygame.image.load('images/AuraFarm Intro/3.png')
+        self.screen.blit(startscreen, (0, 0))
+        pygame.display.update()
+        pygame.time.delay(4000)
+        startscreen = pygame.image.load('images/AuraFarm Intro/4.png')
+        self.screen.blit(startscreen, (0, 0))
+        pygame.display.update()
+        pygame.time.delay(8000)
 
     def draw_map(self):
         for layer in self.tmx_data.visible_layers:
@@ -86,6 +113,7 @@ class Game:
                     self.screen.blit(tile, (x * self.TILE_WIDTH - self.camerax, y * self.TILE_HEIGHT))
 
     def run(self):
+        pygame.mixer.music.load('sounds/piano_sound.mp3')
         pygame.mixer.music.play()
         pygame.mixer.music.play(-1)
         running = True
@@ -96,16 +124,35 @@ class Game:
             moved = 0
             self.draw_map()
 
+            if (self.player.health <= 0):
+                running = False
+                self.lose()
+
             self.camerax = self.player.pos[0] - 400
-            self.camerax = max(0, min(self.camerax, 18*64 - 800))
+            if self.onmap == "forest":
+                self.camerax = max(0, min(self.camerax, 18*64 - 800))
+                self.player.minheight = 320
+            elif self.onmap == "village":
+                self.camerax = max(0, min(self.camerax, 25*64 - 800))
+                self.player.minheight = 360
 
             colliding = False
             for obj in self.tmx_data.objects:
                 obj.rect = pygame.Rect(2*obj.x - self.camerax, 2*obj.y, 2*obj.width, 2*obj.height)
                 if obj.type != 'Food':
                     if player_rect.colliderect(obj.rect):
-                        print(obj.rect)
                         colliding = True
+                if obj.type == "door":
+                    if player_rect.colliderect(obj.rect):
+                        self.change_map("village", [50, 50], 416)
+                if obj.type == "soldier":
+                    if player_rect.colliderect(obj.rect):
+                        self.draw_pop("test")
+                if obj.type == "finish":
+                    if player_rect.colliderect(obj.rect):
+                        self.win()
+                        running = False
+
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -121,23 +168,18 @@ class Game:
                     # checks for any clicks on the door
                     for obj in self.interactables:
                         if obj["type"] == "door" and obj["rect"].collidepoint(world_mouse_pos):
-                            #self.change_map(obj["target"], obj["spawn"])
-                            self.tmx_data = pytmx.load_pygame("maps/FinalVillageMap.tmx")
-                            self.onmap = "village"
-                            self.TILE_WIDTH = self.tmx_data.tilewidth * 2
-                            self.TILE_HEIGHT = self.tmx_data.tileheight * 2
+                            self.change_map("village", [50, 50], 416)
 
-                            mapwidth = self.tmx_data.width * self.TILE_WIDTH
-                            mapheight = self.tmx_data.height * self.TILE_HEIGHT
 
             keys = pygame.key.get_pressed()
+            moved = 0
             if keys[pygame.K_LEFT] or keys[pygame.K_a]:
                 self.player.moveleftright(-4);
-                if (self.camerax != 0 and self.camerax != 18*64 - 800):
+                if self.camerax != 0 and ((self.camerax != 18*64 - 800 and self.onmap == "forest") or (self.onmap == "village" and self.camerax != 25*64 - 800)):
                     moved = -4
-            if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
                 self.player.moveleftright(4);
-                if (self.camerax != 0 and self.camerax != 18*64 - 800):
+                if self.camerax != 0 and ((self.camerax != 18*64 - 800 and self.onmap == "forest") or (self.onmap == "village" and self.camerax != 25*64 - 800)):
                     moved = 4
 
             if not colliding:
@@ -163,6 +205,15 @@ class Game:
                     self.player.changehealth(food.health)
                 if not food.iseaten():
                     self.screen.blit(self.assets['food'], (food.x, food.y))
+
+            for food in self.interactable_poison:
+                food.x = food.x - moved
+                food.rect = pygame.Rect(food.x, food.y, food.width, food.height)
+                if not food.iseaten() and player_rect.colliderect(food.rect):
+                    food.eaten = True
+                    self.player.changehealth(-20)
+                if not food.iseaten():
+                    self.screen.blit(self.assets['orange'], (food.x, food.y))
 
 
             # update
@@ -206,10 +257,56 @@ class Game:
         lines.append(current_line)
         return lines
 
+    def change_map(self, mapname, spawnpoint, floor):
+        self.tmx_data = pytmx.load_pygame("maps/FinalVillageMap.tmx")
+        self.onmap = "village"
+        self.TILE_WIDTH = self.tmx_data.tilewidth * 2
+        self.TILE_HEIGHT = self.tmx_data.tileheight * 2
+
+        self.interactable_food = []
+        self.interactable_poison = []
+        for obj in self.tmx_data.objects:
+            if obj.type == 'Food':
+                newfood = Food(obj.x * 2, obj.y * 2, obj.width * 2, obj.height * 2)
+                self.interactable_food.append(newfood)
+            if obj.type == 'Poison':
+                newfood = Food(obj.x * 2, obj.y * 2, obj.width * 2, obj.height * 2)
+                self.interactable_poison.append(newfood)
+        self.camerax = 0
+        self.player.pos[0] = 0
+        self.player.pos[1] = 0
+
+        self.mapwidth = self.tmx_data.width * self.TILE_WIDTH
+        self.mapheight = self.tmx_data.height * self.TILE_HEIGHT
+
+    def lose(self):
+        self.screen.blit(self.assets['loseimage'], (0, 0))
+        pygame.display.update()
+        running = True;
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_r:
+                        Game.__init__(self)
+                        Game.run()
 
 
+    def win(self):
+        self.screen.blit(self.assets['winimage'], (0, 0))
+        pygame.display.update()
+        running = True;
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_r:
+                        Game.__init__(self)
+                        Game.run()
 
 
-#Game().intro()
+Game().intro()
 Game().run()
 

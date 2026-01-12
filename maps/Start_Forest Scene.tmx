@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="18" height="7" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="38">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="18" height="7" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="43">
  <tileset firstgid="1" source="Landscape.tsx"/>
  <tileset firstgid="225" source="Cereals.tsx"/>
  <objectgroup id="4" name="soldierInfo">
@@ -26,6 +26,9 @@
  <objectgroup id="5" name="foods">
   <object id="35" type="Food" gid="225" x="1.94616" y="193.468" width="32" height="32"/>
   <object id="36" type="Food" gid="225" x="544.984" y="128.33" width="32" height="32"/>
-  <object id="37" gid="225" x="128.234" y="95.096" width="32" height="32"/>
+  <object id="37" type="Food" gid="225" x="128.234" y="95.096" width="32" height="32"/>
+  <object id="38" type="Poison" gid="238" x="511.228" y="132.419" width="32" height="32"/>
+  <object id="39" type="Poison" gid="238" x="239.958" y="191.542" width="32" height="32"/>
+  <object id="41" type="Poison" gid="238" x="414.424" y="197.667" width="32" height="32"/>
  </objectgroup>
 </map>
