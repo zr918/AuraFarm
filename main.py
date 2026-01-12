@@ -126,6 +126,7 @@ class Game:
 
             if (self.player.health <= 0):
                 running = False
+                pygame.mixer.music.stop()
                 self.lose()
 
             self.camerax = self.player.pos[0] - 400
@@ -150,6 +151,7 @@ class Game:
                         self.draw_pop("test")
                 if obj.type == "finish":
                     if player_rect.colliderect(obj.rect):
+                        pygame.mixer.music.stop()
                         self.win()
                         running = False
 
@@ -228,6 +230,9 @@ class Game:
 
             if self.active_popup:
                  self.draw_pop(self.active_popup)
+
+        pygame.mixer.music.stop()
+
 
 
     #This draws the popup box
