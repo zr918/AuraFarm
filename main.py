@@ -16,6 +16,8 @@ class Game:
         #slightly stupid fix to a bug (temp setting the screen to an irrelevant size)
         self.screen = pygame.display.set_mode((800, 600))
 
+        self.onmap = "forest"
+
         self.tmx_data = pytmx.load_pygame("maps/Start_Forest Scene.tmx")
         self.TILE_WIDTH = self.tmx_data.tilewidth * 2
         self.TILE_HEIGHT = self.tmx_data.tileheight * 2
@@ -118,8 +120,15 @@ class Game:
 
                     # checks for any clicks on the door
                     for obj in self.interactables:
-                        if obj[:type:] == "door" and obj.colliderect(world_mouse_pos):
-                            self.change_map(obj["target"], obj["spawn"])
+                        if obj["type"] == "door" and obj["rect"].collidepoint(world_mouse_pos):
+                            #self.change_map(obj["target"], obj["spawn"])
+                            self.tmx_data = pytmx.load_pygame("maps/FinalVillageMap.tmx")
+                            self.onmap = "village"
+                            self.TILE_WIDTH = self.tmx_data.tilewidth * 2
+                            self.TILE_HEIGHT = self.tmx_data.tileheight * 2
+
+                            mapwidth = self.tmx_data.width * self.TILE_WIDTH
+                            mapheight = self.tmx_data.height * self.TILE_HEIGHT
 
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LEFT] or keys[pygame.K_a]:

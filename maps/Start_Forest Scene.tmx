@@ -10,7 +10,7 @@
   </object>
  </objectgroup>
  <objectgroup id="3" name="nextMap">
-  <object id="4" name="door" x="537.117" y="163.912" width="25.061" height="27.7703"/>
+  <object id="4" name="door" type="door" x="537.117" y="163.912" width="25.061" height="27.7703"/>
  </objectgroup>
  <layer id="1" name="Tile Layer 1" width="18" height="7">
   <data encoding="csv">
